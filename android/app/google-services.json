@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "582708922241",
+    "project_id": "holy-voyage",
+    "storage_bucket": "holy-voyage.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:582708922241:android:1e8713b350f9f2dfaaca80",
+        "android_client_info": {
+          "package_name": "com.github.ibzgure.holyvoyage"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjcydbek07zNdjo41e0Wv3xpJRBx0RVdA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
