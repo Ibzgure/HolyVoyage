@@ -4,6 +4,7 @@ class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _LoginPageState createState() => _LoginPageState();
 }
 
@@ -23,7 +24,7 @@ class _LoginPageState extends State<LoginPage> {
             // MomHive Logo (Placeholder for an actual image)
             Center(
               child: Image.asset(
-                'assets/travel.jpg', // Replace with your actual logo asset
+                'assets/logo1.png', // Replace with your actual logo asset
                 height: 200,
               ),
             ),
@@ -41,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
             TextField(
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
-                fillColor: const Color(0xFFFFFCE5),
+                fillColor: const Color.fromARGB(255, 159, 143, 15),
                 filled: true,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -82,6 +83,8 @@ class _LoginPageState extends State<LoginPage> {
             ),
             const SizedBox(height: 20),
 
+            
+
             // Login Button
             ElevatedButton(
               onPressed: () {
@@ -103,18 +106,17 @@ class _LoginPageState extends State<LoginPage> {
                   child: const Text(
                     'Forgot Password?',
                     style: TextStyle(
-                      color: Color(0xFF4A90E2),
+                      color: Color.fromRGBO(243, 255, 206, 0.714),
                       fontSize: 16,
                     ),
                   ),
                 ),
                 GestureDetector(
-                  onTap: () {
-                                },
+                  onTap: (){        },
                   child: const Text(
                     'Sign Up',
                     style: TextStyle(
-                      color: Color(0xFF4A90E2),
+                      color: Color.fromARGB(255, 199, 218, 154),
                       fontSize: 16,
                     ),
                   ),

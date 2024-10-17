@@ -1,9 +1,13 @@
+import 'package:firebase_core/firebase_core.dart'; // Keep this import
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/mainscreen.dart';
-import '/login.dart';
 
-void main() {
-  runApp(const MomHiveApp());
+import '/login.dart';
+import 'forgot_password.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Ensures all bindings are initialized
+  await Firebase.initializeApp(); // Initialize Firebase
+  runApp(const MomHiveApp()); // Run your app after Firebase is initialized
 }
 
 class MomHiveApp extends StatelessWidget {
@@ -12,13 +16,13 @@ class MomHiveApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'MomHive',
+      title: 'Hajj',
       theme: ThemeData(
-        primaryColor: const Color.fromARGB(255, 103, 67, 247),
-        scaffoldBackgroundColor: Colors.white,
+        primaryColor: const Color.fromARGB(255, 66, 41, 170),
+        scaffoldBackgroundColor: const Color.fromARGB(255, 180, 27, 27),
         textTheme: const TextTheme(
           bodyMedium: TextStyle(
-              color: Color(0xFF4D4D4D), fontSize: 16, fontFamily: 'Roboto'),
+              color: Color.fromARGB(255, 181, 31, 31), fontSize: 16, fontFamily: 'Roboto'),
           headlineSmall: TextStyle(
               color: Color(0xFF4D4D4D),
               fontWeight: FontWeight.bold,
@@ -51,9 +55,8 @@ class MomHiveApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => LoginPage(),
-        "'/main": context  => MainScreen(),
-
+        '/': (context) => const LoginPage(),
+        '/forgot-password': (context) => const ForgotPasswordPage(),
       },
     );
   }
