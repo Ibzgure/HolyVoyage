@@ -46,7 +46,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '582708922241',
     projectId: 'holy-voyage',
     authDomain: 'holy-voyage.firebaseapp.com',
-    storageBucket: 'holy-voyage.appspot.com',
+    databaseURL: 'https://holy-voyage-default-rtdb.firebaseio.com',
+    storageBucket: 'holy-voyage.firebasestorage.app',
     measurementId: 'G-741PH7DC1C',
   );
 
@@ -55,7 +56,8 @@ class DefaultFirebaseOptions {
     appId: '1:582708922241:android:1e8713b350f9f2dfaaca80',
     messagingSenderId: '582708922241',
     projectId: 'holy-voyage',
-    storageBucket: 'holy-voyage.appspot.com',
+    databaseURL: 'https://holy-voyage-default-rtdb.firebaseio.com',
+    storageBucket: 'holy-voyage.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -63,7 +65,8 @@ class DefaultFirebaseOptions {
     appId: '1:582708922241:ios:12daeb92b6b80578aaca80',
     messagingSenderId: '582708922241',
     projectId: 'holy-voyage',
-    storageBucket: 'holy-voyage.appspot.com',
+    databaseURL: 'https://holy-voyage-default-rtdb.firebaseio.com',
+    storageBucket: 'holy-voyage.firebasestorage.app',
     iosBundleId: 'com.example.flutterApplication1',
   );
 
@@ -72,7 +75,8 @@ class DefaultFirebaseOptions {
     appId: '1:582708922241:ios:12daeb92b6b80578aaca80',
     messagingSenderId: '582708922241',
     projectId: 'holy-voyage',
-    storageBucket: 'holy-voyage.appspot.com',
+    databaseURL: 'https://holy-voyage-default-rtdb.firebaseio.com',
+    storageBucket: 'holy-voyage.firebasestorage.app',
     iosBundleId: 'com.example.flutterApplication1',
   );
 
@@ -82,8 +86,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '582708922241',
     projectId: 'holy-voyage',
     authDomain: 'holy-voyage.firebaseapp.com',
-    storageBucket: 'holy-voyage.appspot.com',
+    databaseURL: 'https://holy-voyage-default-rtdb.firebaseio.com',
+    storageBucket: 'holy-voyage.firebasestorage.app',
     measurementId: 'G-P3782ETQZB',
   );
-
 }

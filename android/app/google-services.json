@@ -1,8 +1,9 @@
 {
   "project_info": {
     "project_number": "582708922241",
+    "firebase_url": "https://holy-voyage-default-rtdb.firebaseio.com",
     "project_id": "holy-voyage",
-    "storage_bucket": "holy-voyage.appspot.com"
+    "storage_bucket": "holy-voyage.firebasestorage.app"
   },
   "client": [
     {

@@ -17,7 +17,8 @@ class _SignUpPageState extends State<SignUpPage> {
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/mosque_background.png'), // Use your mosque background image
+            image: AssetImage(
+                'assets/mosque_background.png'), // Use your mosque background image
             fit: BoxFit.cover,
           ),
         ),

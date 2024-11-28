@@ -1,15 +1,70 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Import Firebase Auth
+import 'package:flutter_application_1/pages/landing_page.dart';
+import 'forgot_password.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
   bool _obscurePassword = true;
+  final FirebaseAuth _auth = FirebaseAuth.instance; // Firebase Auth instance
+
+  // Controllers for capturing user input
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  // Function to handle login with Firebase
+  Future<void> _login() async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      // Check if the widget is still mounted to safely navigate
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LandingPage()),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+      if (e.code == 'user-not-found') {
+        errorMessage = 'No user found for that email.';
+      } else if (e.code == 'wrong-password') {
+        errorMessage = 'Wrong password provided.';
+      } else if (e.code == 'invalid-email') {
+        errorMessage = 'Invalid email address.';
+      } else {
+        errorMessage = 'Something went wrong. Please try again.';
+      }
+
+      // Display error in an alert dialog
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Login Error'),
+            content: Text(errorMessage),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,14 +76,13 @@ class _LoginPageState extends State<LoginPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // MomHive Logo (Placeholder for an actual image)
             Center(
               child: Image.asset(
                 'assets/logo1.png', // Replace with your actual logo asset
                 height: 200,
               ),
             ),
-            const SizedBox(height: 20, width: 20),
+            const SizedBox(height: 20),
 
             Center(
               child: Text(
@@ -40,22 +94,26 @@ class _LoginPageState extends State<LoginPage> {
 
             // Email Input Field
             TextField(
+              controller: _emailController, // Controller for email input
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
-                fillColor: const Color.fromARGB(255, 159, 143, 15),
+                fillColor: const Color.fromARGB(255, 255, 254, 246),
                 filled: true,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide.none,
                 ),
                 hintText: 'Enter your email',
-                hintStyle: const TextStyle(color: Colors.grey), // Add this line
+                hintStyle: const TextStyle(color: Colors.grey),
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               ),
             ),
             const SizedBox(height: 20),
+
+            // Password Input Field
             TextField(
+              controller: _passwordController, // Controller for password input
               obscureText: _obscurePassword,
               decoration: InputDecoration(
                 fillColor: const Color(0xFFFFFCE5),
@@ -83,13 +141,9 @@ class _LoginPageState extends State<LoginPage> {
             ),
             const SizedBox(height: 20),
 
-            
-
             // Login Button
             ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, '/main');
-              },
+              onPressed: _login, // Call the login function
               child: const Text('Login'),
             ),
 
@@ -101,7 +155,11 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    // Handle forgot password action
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ForgotPasswordPage()),
+                    );
                   },
                   child: const Text(
                     'Forgot Password?',
@@ -112,7 +170,9 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: (){        },
+                  onTap: () {
+                    // Navigate to Sign Up page here
+                  },
                   child: const Text(
                     'Sign Up',
                     style: TextStyle(
