@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/login.dart';
 import 'package:flutter_application_1/pages/landing_page.dart';
 import 'package:flutter_application_1/pages/full_packages_page.dart';
 import 'package:flutter_application_1/pages/visa_page.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_application_1/pages/standard_hajj_package.dart';
 import 'package:flutter_application_1/pages/premium_hajj_package.dart';
 import 'package:flutter_application_1/pages/family_hajj_package.dart';
 import 'package:flutter_application_1/pages/group_umrah_package.dart';
+import 'package:flutter_application_1/signup.dart';
 import 'firebase_options.dart';
 import 'forgot_password.dart';
 
@@ -66,9 +68,11 @@ class SeamlessPilgrimageApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      initialRoute: '/registration',
+      initialRoute: '/login',
       routes: {
-        '/': (context) => const LandingPage(),
+        '/login': (context) => LoginPage(),
+        '/signup': (context) => SignUpPage(),
+        '/landing': (context) => const LandingPage(),
         '/full-packages': (context) => const FullPackagesPage(),
         '/visa': (context) => const VisaPage(),
         '/registration': (context) => RegistrationPage(
@@ -80,7 +84,7 @@ class SeamlessPilgrimageApp extends StatelessWidget {
             debugPrint("Registration completed!");  // Handle completion function
           },
         ),
-        '/hajj-brochures': (context) => const HajjBrochuresPage(),
+        '/hajj-brochures': (context) => HajjBrochuresPage(),
         '/tour-guides': (context) => const TourGuidesPage(),
         '/forgot-password': (context) => const ForgotPasswordPage(),
         '/basic-umrah-package': (context) => const BasicUmrahPage(),

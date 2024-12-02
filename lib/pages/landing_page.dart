@@ -1,5 +1,3 @@
-// ignore_for_file: unused_import
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/full_packages_page.dart';
 import 'package:flutter_application_1/pages/visa_page.dart';
@@ -14,7 +12,7 @@ class LandingPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Holy Voyage Kenya'),
-        backgroundColor: const Color.fromARGB(255, 99, 180, 221),
+        backgroundColor: const Color.fromARGB(255, 231, 76, 255),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -44,16 +42,35 @@ class LandingPage extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.teal, width: 2),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(15),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 40, color: Colors.teal),
-            const SizedBox(height: 10),
-            Text(label, style: const TextStyle(fontSize: 16)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              spreadRadius: 2,
+              blurRadius: 8,
+              offset: const Offset(4, 4), // Shadow position
+            ),
           ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 40, color: Colors.teal),
+              const SizedBox(height: 10),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );

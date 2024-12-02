@@ -74,7 +74,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Registration for Umrah Package'),
-        backgroundColor: Colors.teal[700],
+        backgroundColor: const Color.fromARGB(255, 231, 76, 255),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, '/basic-umrah-package'); // Navigate back to LandingPage
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -89,37 +95,60 @@ class _RegistrationPageState extends State<RegistrationPage> {
               ),
               const SizedBox(height: 20),
               // Form for current person
-              TextField(
-                controller: nameControllers[currentPersonIndex],
-                decoration: const InputDecoration(labelText: 'Enter Full Name'),
-                onChanged: (value) {
-                  names[currentPersonIndex] = value;
-                },
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: TextField(
+                  controller: nameControllers[currentPersonIndex],
+                  decoration: const InputDecoration(
+                    labelText: 'Enter Full Name',
+                    contentPadding: EdgeInsets.all(16), // Add padding inside the input field
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    names[currentPersonIndex] = value;
+                  },
+                ),
               ),
-              const SizedBox(height: 8),
-              TextField(
-                keyboardType: TextInputType.phone,
-                decoration:
-                    const InputDecoration(labelText: 'Enter Phone Number'),
-                onChanged: (value) {
-                  phoneNumbers[currentPersonIndex] = value;
-                },
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: TextField(
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(
+                    labelText: 'Enter Phone Number',
+                    contentPadding: EdgeInsets.all(16),
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    phoneNumbers[currentPersonIndex] = value;
+                  },
+                ),
               ),
-              const SizedBox(height: 8),
-              TextField(
-                keyboardType: TextInputType.emailAddress,
-                decoration:
-                    const InputDecoration(labelText: 'Enter Email Address'),
-                onChanged: (value) {
-                  emails[currentPersonIndex] = value;
-                },
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: TextField(
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: const InputDecoration(
+                    labelText: 'Enter Email Address',
+                    contentPadding: EdgeInsets.all(16),
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    emails[currentPersonIndex] = value;
+                  },
+                ),
               ),
-              const SizedBox(height: 8),
-              TextField(
-                decoration: const InputDecoration(labelText: 'Enter Address'),
-                onChanged: (value) {
-                  addresses[currentPersonIndex] = value;
-                },
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: TextField(
+                  decoration: const InputDecoration(
+                    labelText: 'Enter Address',
+                    contentPadding: EdgeInsets.all(16),
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    addresses[currentPersonIndex] = value;
+                  },
+                ),
               ),
               const SizedBox(height: 8),
               // Toggle between Passport or ID number
@@ -150,52 +179,56 @@ class _RegistrationPageState extends State<RegistrationPage> {
               ),
               const SizedBox(height: 8),
               // Show either passport or ID input based on the selected option
-              TextField(
-                controller: isPassportSelected
-                    ? passportControllers[currentPersonIndex]
-                    : idControllers[currentPersonIndex],
-                decoration: InputDecoration(
-                  labelText: isPassportSelected
-                      ? 'Enter Passport Number'
-                      : 'Enter ID Number',
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: TextField(
+                  controller: isPassportSelected
+                      ? passportControllers[currentPersonIndex]
+                      : idControllers[currentPersonIndex],
+                  decoration: InputDecoration(
+                    labelText: isPassportSelected
+                        ? 'Enter Passport Number'
+                        : 'Enter ID Number',
+                    contentPadding: const EdgeInsets.all(16),
+                    border: const OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    if (isPassportSelected) {
+                      passports[currentPersonIndex] = value;
+                    } else {
+                      ids[currentPersonIndex] = value;
+                    }
+                  },
                 ),
-                onChanged: (value) {
-                  if (isPassportSelected) {
-                    passports[currentPersonIndex] = value;
-                  } else {
-                    ids[currentPersonIndex] = value;
-                  }
-                },
               ),
               const SizedBox(height: 16),
-              // Show "Next" button if there's another person, otherwise show "Proceed to Billing"
-              ElevatedButton(
-                onPressed: () {
-                  if (names[currentPersonIndex].isNotEmpty &&
-                      phoneNumbers[currentPersonIndex].isNotEmpty &&
-                      emails[currentPersonIndex].isNotEmpty &&
-                      addresses[currentPersonIndex].isNotEmpty &&
-                      (isPassportSelected
-                          ? passports[currentPersonIndex].isNotEmpty
-                          : ids[currentPersonIndex].isNotEmpty)) {
-                    nextPerson(); // Move to the next person or proceed to billing
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text(
-                              'Please complete the registration for this person')),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
+              // Floating Action Button for Next/Proceed
+              Align(
+                alignment: Alignment.bottomRight,
+                child: FloatingActionButton.extended(
+                  onPressed: () {
+                    if (names[currentPersonIndex].isNotEmpty &&
+                        phoneNumbers[currentPersonIndex].isNotEmpty &&
+                        emails[currentPersonIndex].isNotEmpty &&
+                        addresses[currentPersonIndex].isNotEmpty &&
+                        (isPassportSelected
+                            ? passports[currentPersonIndex].isNotEmpty
+                            : ids[currentPersonIndex].isNotEmpty)) {
+                      nextPerson(); // Move to the next person or proceed to billing
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text(
+                                'Please complete the registration for this person')),
+                      );
+                    }
+                  },
+                  label: currentPersonIndex < widget.numberOfPeople - 1
+                      ? const Text('Next')
+                      : const Text('Proceed to Billing'),
                   backgroundColor: Colors.teal,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  textStyle: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold),
+                  elevation: 6.0,
                 ),
-                child: currentPersonIndex < widget.numberOfPeople - 1
-                    ? const Text('Next')
-                    : const Text('Proceed to Billing'),
               ),
             ],
           ),

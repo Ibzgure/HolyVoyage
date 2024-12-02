@@ -16,6 +16,10 @@ dependencies:
   firebase_auth: ^5.3.1
   firebase_storage: ^12.3.3 # Removed duplicate entry
   cloud_firestore: ^5.5.0
+  path_provider: ^2.1.5
+  dio: ^5.7.0
+  flutter_email_sender: ^6.0.3
+  cloud_functions: ^5.1.5
 
 dev_dependencies:
   flutter_test:

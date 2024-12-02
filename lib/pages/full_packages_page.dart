@@ -8,6 +8,13 @@ class FullPackagesPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Hajj and Umrah Packages"),
+        backgroundColor: const Color.fromARGB(255, 231, 76, 255),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, '/landing'); // Navigate back to LandingPage
+          },
+        ),
       ),
       body: const SingleChildScrollView(
         padding: EdgeInsets.all(16),
@@ -20,6 +27,7 @@ class FullPackagesPage extends StatelessWidget {
               price: "\$1200",
               description:
                   "Round-trip airfare (economy class),   Accommodation in a 3-star hotel,   Daily breakfast,   Transportation to and from the airport,   Basic visa processing.",
+              bookRoute: '/basic-umrah-package',
             ),
             SizedBox(height: 16),
             // Standard Umrah Package
@@ -28,6 +36,7 @@ class FullPackagesPage extends StatelessWidget {
               price: "\$1500",
               description:
                   "Round-trip airfare (business class),Accommodation in a 4-star hotel (shared room),Daily breakfast and dinner,Transportation to and from the airport, Visa processing,Guided tours to key religious sites.",
+              bookRoute: '/standard-umrah-package',
             ),
             SizedBox(height: 16),
             // Premium Umrah Package
@@ -36,6 +45,7 @@ class FullPackagesPage extends StatelessWidget {
               price: "\$3000",
               description:
                   "Round-trip airfare (business class), Priority visa processing,Accommodation in Makkah (5-star hotel, private suite), Accommodation in Madinah (5-star hotel, private suite),Gourmet meals (full board),Private luxury transportation for all activities, Dedicated personal guide throughout the pilgrimage, 24/7 health and wellness services.",
+              bookRoute: '/premium-umrah-package',
             ),
             SizedBox(height: 16),
             // Hajj Package 2024 (Basic)
@@ -44,6 +54,7 @@ class FullPackagesPage extends StatelessWidget {
               price: "\$3500",
               description:
                   " Round-trip airfare (economy class)',Accommodation in Makkah (3-star hotel),Accommodation in Madinah (3-star hotel), Group transportation to Hajj sites, Basic visa processing, Daily meals (breakfast only)",
+              bookRoute: '/basic-hajj-package',
             ),
             SizedBox(height: 16),
             // Hajj Package 2024 (Standard)
@@ -51,7 +62,8 @@ class FullPackagesPage extends StatelessWidget {
               packageName: "Hajj Package 2024 (Standard)",
               price: "\$5000",
               description:
-                  "Round-trip airfare (economy class),Visa processing, Accommodation in Makkah (3-star hotel), Accommodation in Madinah (3-star hotel),Daily meals (breakfast only), Group transportation to Hajj sites,Basic travel insurance',",
+                  "Round-trip airfare (economy class),Visa processing, Accommodation in Makkah (3-star hotel), Accommodation in Madinah (3-star hotel),Daily meals (breakfast only), Group transportation to Hajj sites,Basic travel insurance",
+              bookRoute: '/standard-hajj-package',
             ),
             SizedBox(height: 16),
             // Hajj Package 2024 (Luxury)
@@ -60,19 +72,25 @@ class FullPackagesPage extends StatelessWidget {
               price: "\$8000",
               description:
                   " Round-trip airfare (first class), Visa processing, Accommodation in Makkah (5-star hotel, private suite), Accommodation in Madinah (5-star hotel, private suite), Gourmet meals (full board), Private luxury transportation to all Hajj sites,Dedicated personal guide throughout the journey, Comprehensive healthcare and wellness services,24/7 concierge and VIP support services",
+              bookRoute: '/luxury-hajj-package',
             ),
+            SizedBox(height: 16),
+            // Family Hajj Package
             PackageCard(
               packageName: "Family Hajj Package",
               price: "\$4500",
               description:
                   'Round-trip airfare (economy class), Visa processing ,Accommodation in Makkah (4-star hotel, family room), Accommodation in Madinah (4-star hotel, family room),Daily meals (half board),Family-friendly group transportation to Hajj sites, Childcare services during group activities',
+              bookRoute: '/family-hajj-package',
             ),
-
+            SizedBox(height: 16),
+            // Group Umrah Package
             PackageCard(
               packageName: "Group Umrah Package",
               price: "\$3000",
               description:
                   '- Round-trip airfare (economy class),Visa processing,Accommodation in Makkah (shared rooms), Accommodation in Madinah (shared rooms),Daily meals (full board),Group transportation to religious sites,Guided group activities',
+              bookRoute: '/group-umrah-package',
             ),
           ],
         ),
@@ -85,12 +103,14 @@ class PackageCard extends StatelessWidget {
   final String packageName;
   final String price;
   final String description;
+  final String bookRoute;
 
   const PackageCard({
     super.key,
     required this.packageName,
     required this.price,
     required this.description,
+    required this.bookRoute,
   });
 
   @override
@@ -131,7 +151,7 @@ class PackageCard extends StatelessWidget {
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/basic-umrah-package');
+                Navigator.pushNamed(context, bookRoute);
               },
               child: const Text("Book Now"),
             ),
