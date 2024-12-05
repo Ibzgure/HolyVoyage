@@ -1,5 +1,5 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 
 class VisaPage extends StatelessWidget {
   const VisaPage({super.key});
@@ -64,7 +64,9 @@ class VisaPage extends StatelessWidget {
             const SizedBox(height: 30),
             FloatingActionButton.extended(
               onPressed: () {
-                _showEmailDialog(context);
+                // Generate and display the unique ID
+                String uniqueId = _generateRandomString(6);
+                _showUniqueIdDialog(context, uniqueId);
               },
               label: const Text('Apply for Visa'),
               icon: const Icon(Icons.check_circle),
@@ -92,68 +94,23 @@ class VisaPage extends StatelessWidget {
     );
   }
 
-  void _showEmailDialog(BuildContext context) {
-    final TextEditingController emailController = TextEditingController();
+  // Function to generate a 6-character unique ID
+  String _generateRandomString(int length) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    Random rand = Random();
+    return List.generate(length, (index) {
+      return characters[rand.nextInt(characters.length)];
+    }).join();
+  }
 
+  // Function to show the generated ID in a dialog
+  void _showUniqueIdDialog(BuildContext context, String uniqueId) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Enter your Email'),
-          content: TextField(
-            controller: emailController,
-            decoration: const InputDecoration(hintText: "Email Address"),
-            keyboardType: TextInputType.emailAddress,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                String email = emailController.text;
-                if (email.isNotEmpty) {
-                  _sendEmail(email);
-                  Navigator.of(context).pop();
-                  _showSuccessDialog(context);
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please enter a valid email address')),
-                  );
-                }
-              },
-              child: const Text('Send'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // Use Firebase Cloud Functions to send email
-  Future<void> _sendEmail(String email) async {
-    try {
-      final HttpsCallable sendEmailFunction = FirebaseFunctions.instance.httpsCallable('sendEmail');
-      final result = await sendEmailFunction.call({
-        'email': email,
-        'message': 'Your visa application has been successfully submitted.',
-      });
-      print('Email sent: $result');
-    } catch (e) {
-      print('Error sending email: $e');
-    }
-  }
-
-  void _showSuccessDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Success'),
-          content: const Text('Successfully booked your application for a visa. You will be contacted.'),
+          title: const Text('Unique Visa Application ID'),
+          content: Text('Your unique Visa Application ID is: $uniqueId'),
           actions: [
             TextButton(
               onPressed: () {

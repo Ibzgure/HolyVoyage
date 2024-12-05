@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For rootBundle
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import 'package:flutter_email_sender/flutter_email_sender.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:path_provider/path_provider.dart'; // Path provider for non-web platforms
+import 'package:url_launcher/url_launcher.dart'; // For launching URLs in web
 
 class HajjBrochuresPage extends StatelessWidget {
   const HajjBrochuresPage({super.key});
@@ -26,24 +28,28 @@ class HajjBrochuresPage extends StatelessWidget {
             title: const Text('Hajj Brochure 2024'),
             subtitle: const Text('Detailed Hajj package information and guidelines.'),
             trailing: const Icon(Icons.picture_as_pdf),
-            onTap: () {
-              _showOptions(
-                context, // Pass context here
-                'Hajj Brochure 2024',
-                'assets/pdf/hajj-guide.pdf',
-              );
+            onTap: () async {
+              final pdfPath = await _loadPdfFromAssets('assets/pdf/hajj-guide.pdf');
+              if (pdfPath != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => PDFViewerPage(pdfPath: pdfPath)),
+                );
+              }
             },
           ),
           ListTile(
             title: const Text('Umrah Brochure 2024'),
             subtitle: const Text('Detailed Umrah package information and guidelines.'),
             trailing: const Icon(Icons.picture_as_pdf),
-            onTap: () {
-              _showOptions(
-                context, // Pass context here
-                'Umrah Brochure 2024',
-                'assets/pdf/umrah-guide.pdf',
-              );
+            onTap: () async {
+              final pdfPath = await _loadPdfFromAssets('assets/pdf/umrah-guide.pdf');
+              if (pdfPath != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => PDFViewerPage(pdfPath: pdfPath)),
+                );
+              }
             },
           ),
         ],
@@ -51,89 +57,75 @@ class HajjBrochuresPage extends StatelessWidget {
     );
   }
 
-  void _showOptions(BuildContext context, String brochureName, String assetPath) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.download),
-                title: const Text('Download PDF'),
-                onTap: () async {
-                  Navigator.pop(context);
-                  await _downloadPdf(context, brochureName, assetPath); // Pass context here
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.email),
-                title: const Text('Send to Email'),
-                onTap: () async {
-                  Navigator.pop(context);
-                  await _sendPdfByEmail(context, brochureName, assetPath); // No context needed
-                },
-              ),
-            ],
-          ),
-        );
-      },
+  Future<String?> _loadPdfFromAssets(String assetPath) async {
+    try {
+      if (kIsWeb) {
+        // Web-specific logic: Open PDF in a browser using a URL launcher
+        final url = Uri.base.resolve(assetPath).toString(); // Full URL for the web
+        print('Opening PDF directly in browser: $url');
+        
+        // Use launchUrl with LaunchMode.externalApplication
+        if (await canLaunch(url)) {
+          await launch(url);
+        } else {
+          throw 'Could not launch $url';
+        }
+        return null; // No file path to return for web
+      } else {
+        // Non-web behavior: Load PDF from assets and save to a temporary file
+        final byteData = await rootBundle.load(assetPath);
+        print("PDF loaded from assets successfully.");
+
+        final directory = await getTemporaryDirectory();
+        final filePath = '${directory.path}/${assetPath.split('/').last}';
+        final file = File(filePath);
+        await file.writeAsBytes(byteData.buffer.asUint8List());
+        print("PDF saved to temporary directory: $filePath");
+
+        return filePath; // Return the file path for non-web
+      }
+    } catch (e) {
+      print('Error loading PDF: $e');
+      return null;
+    }
+  }
+}
+
+class PDFViewerPage extends StatelessWidget {
+  final String pdfPath;
+
+  const PDFViewerPage({super.key, required this.pdfPath});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('PDF Viewer'),
+        backgroundColor: const Color.fromARGB(255, 231, 76, 255),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+      body: PDFView(
+        filePath: pdfPath,
+        enableSwipe: true,
+        swipeHorizontal: true,
+        autoSpacing: true,
+        pageFling: true,
+        onError: (error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to load PDF: $error')),
+          );
+        },
+        onPageError: (page, error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error on page $page: $error')),
+          );
+        },
+      ),
     );
-  }
-
-  Future<void> _downloadPdf(BuildContext context, String fileName, String assetPath) async {
-    try {
-      final byteData = await rootBundle.load(assetPath); // Load PDF from assets
-      final directory = await getApplicationDocumentsDirectory();
-      final filePath = '${directory.path}/$fileName.pdf';
-      final file = File(filePath);
-      await file.writeAsBytes(byteData.buffer.asUint8List()); // Save PDF to local storage
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Downloaded to $filePath')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to download PDF: $e')),
-      );
-    }
-  }
-
-  Future<void> _sendPdfByEmail(BuildContext context, String subject, String assetPath) async {
-    try {
-      final byteData = await rootBundle.load(assetPath); // Load PDF from assets
-      final directory = await getApplicationDocumentsDirectory();
-      final filePath = '${directory.path}/$subject.pdf';
-      final file = File(filePath);
-      await file.writeAsBytes(byteData.buffer.asUint8List()); // Save PDF to local storage
-
-      final email = Email(
-        body: 'Please find the brochure attached.',
-        subject: subject,
-        recipients: ['user@example.com'], // Replace with dynamic email from login
-        attachmentPaths: [filePath],
-        isHTML: false,
-      );
-
-      await FlutterEmailSender.send(email);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Email sent successfully'),
-          behavior: SnackBarBehavior.floating,
-          duration: Duration(seconds: 3), // Optional
-        ),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to send email: ${e.toString()}'),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.red, // Optional for error indication
-        ),
-      );
-    }
   }
 }
