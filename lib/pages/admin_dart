@@ -1,0 +1,91 @@
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class AdminPage extends StatefulWidget {
+  const AdminPage({super.key});
+
+  @override
+  _AdminPageState createState() => _AdminPageState();
+}
+
+class _AdminPageState extends State<AdminPage> {
+  String _selectedFilter = 'All'; // Default filter
+
+  // Fetch data from Firestore
+  Stream<List<Map<String, dynamic>>> _fetchPayments() {
+    return FirebaseFirestore.instance
+        .collection('payments')
+        // Check this line for correctness
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) {
+              final data = doc.data();
+              return {
+                'id': doc.id, // Include document ID for debugging
+                'numberOfPeople': data['numberOfPeople'] ?? 0,
+                'packageName': data['packageName'] ?? 'Unknown',
+                'paymentMethod': data['paymentMethod'] ?? 'Unknown',
+                'phoneNumber': data['phoneNumber'] ?? 'Unknown',
+                'pricePerPerson': data['pricePerPerson'] ?? '0',
+                'timestamp': data['timestamp'] is Timestamp
+                    ? (data['timestamp'] as Timestamp).toDate()
+                    : DateTime.now(),
+                'totalPrice': data['totalPrice'] ?? '0',
+              };
+            }).toList());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Admin Dashboard'),
+        backgroundColor: Colors.deepPurpleAccent,
+      ),
+      body: StreamBuilder<List<Map<String, dynamic>>>(
+        stream: _fetchPayments(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          final payments = snapshot.data ?? [];
+
+          if (payments.isEmpty) {
+            return const Center(child: Text('No payments found.'));
+          }
+
+          return ListView.builder(
+            itemCount: payments.length,
+            itemBuilder: (context, index) {
+              final payment = payments[index];
+              return Card(
+                margin: const EdgeInsets.all(10),
+                child: ListTile(
+                  leading: const Icon(Icons.person, size: 40, color: Colors.deepPurpleAccent),
+                  title: Text('Package: ${payment['packageName']}'),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Number of People: ${payment['numberOfPeople']}'),
+                      Text('Payment Method: ${payment['paymentMethod']}'),
+                      Text('Phone Number: ${payment['phoneNumber']}'),
+                      Text('Price per Person: \$${payment['pricePerPerson']}'),
+                      Text('Total Price: \$${payment['totalPrice']}'),
+                      Text(
+                          'Timestamp: ${payment['timestamp'].toLocal().toString()}'),
+                      Text('Document ID: ${payment['id']}'), // Debugging information
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}

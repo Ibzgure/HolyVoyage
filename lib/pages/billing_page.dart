@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class BillingPage extends StatefulWidget {
   final int totalPrice;
@@ -25,22 +26,71 @@ class _BillingPageState extends State<BillingPage> {
   final _cvvController = TextEditingController();
   String selectedPaymentMethod = 'None';
 
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // Function to handle payment confirmation
+  Future<void> _confirmPayment() async {
+    if ((selectedPaymentMethod == 'M-Pesa' || selectedPaymentMethod == 'Airtel Money') &&
+        _phoneNumberController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter your phone number')),
+      );
+      return;
+    } else if (selectedPaymentMethod == 'Credit Card' &&
+        (_cardNumberController.text.isEmpty ||
+            _expDateController.text.isEmpty ||
+            _cvvController.text.isEmpty)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter all card details')),
+      );
+      return;
+    }
+
+    // Save the payment data to Firestore
+    try {
+      await _firestore.collection('payments').add({
+        'packageName': widget.packageName,
+        'pricePerPerson': widget.price,
+        'numberOfPeople': widget.numberOfPeople,
+        'totalPrice': widget.totalPrice,
+        'paymentMethod': selectedPaymentMethod,
+        'phoneNumber': _phoneNumberController.text,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+
+      // Show payment success dialog
+      showDialog(
+        context: context,
+        builder: (context) {
+          return const AlertDialog(
+            title: Text('Payment Successful'),
+            content: Text('Your payment has been made successfully!'),
+          );
+        },
+      );
+
+      // Dismiss the dialog after 4 seconds and navigate to Landing Page
+      Future.delayed(const Duration(seconds: 4), () {
+        Navigator.of(context)
+          ..pop() // Close the alert dialog
+          ..pop(); // Navigate back to Landing Page
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Payment failed. Please try again.')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true, // Ensures resizing with the keyboard
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text('Billing Information'),
         backgroundColor: const Color.fromARGB(255, 231, 76, 255),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pushReplacementNamed(context, '/registration'); // Navigate back to LandingPage
-          },
-        ),
       ),
       body: SingleChildScrollView(
-        // Wrap content in a scrollable view
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -159,46 +209,13 @@ class _BillingPageState extends State<BillingPage> {
               ),
             ],
 
-            // Confirm Button with Floating Effect and Box Shadow
+            // Confirm Button
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: ElevatedButton(
-                  onPressed: () {
-                    if (_phoneNumberController.text.isEmpty &&
-                        (_cardNumberController.text.isEmpty ||
-                            _expDateController.text.isEmpty ||
-                            _cvvController.text.isEmpty)) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('Please fill in the payment details')),
-                      );
-                      return;
-                    }
-
-                    // Simulate Payment Completion Logic
-                    if (selectedPaymentMethod == 'M-Pesa' ||
-                        selectedPaymentMethod == 'Airtel Money') {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Payment Pending'),
-                          content: Text(
-                              'Complete your payment using instructions sent to ${_phoneNumberController.text}.'),
-                        ),
-                      );
-                    } else if (selectedPaymentMethod == 'Credit Card') {
-                      // Here we would implement actual card processing logic (e.g., using a gateway like Flutterwave)
-                      showDialog(
-                        context: context,
-                        builder: (context) => const AlertDialog(
-                          title: Text('Payment Pending'),
-                          content: Text('Your card payment is being processed.'),
-                        ),
-                      );
-                    }
-                  },
+                  onPressed: _confirmPayment,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.lightBlue,
                     padding: const EdgeInsets.symmetric(vertical: 16),
